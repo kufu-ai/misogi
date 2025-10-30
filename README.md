@@ -1,43 +1,39 @@
 # Misogi
 
-TODO: Delete this and the text below, and describe your gem
+Misogiは、ファイルの内容を解析して、そのファイル名やディレクトリ配置が適切かをチェックするlintツールです。コードの内容とファイルパスの整合性を保ち、プロジェクトの構造を整理された状態に保つことを目的としています。
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/misogi`. To experiment with that code, run `bin/console` for an interactive prompt.
+## インストール
 
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
+次のコマンドを実行して、gemをインストールし、アプリケーションのGemfileに追加します：
 
 ```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle add misogi
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+Bundlerを使用していない場合は、次のコマンドでgemをインストールします：
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+gem install misogi
 ```
 
-## Usage
+## 使い方
 
-TODO: Write usage instructions here
+TODO: 使用方法をここに記述してください
 
-## Development
+## 開発
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+リポジトリをチェックアウト後、`bin/setup`を実行して依存関係をインストールします。その後、`rake spec`でテストを実行できます。また、`bin/console`で対話的なプロンプトを起動して実験することもできます。
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+このgemをローカルマシンにインストールするには、`bundle exec rake install`を実行します。新しいバージョンをリリースするには、`version.rb`でバージョン番号を更新してから、`bundle exec rake release`を実行します。これにより、バージョンのgitタグが作成され、gitコミットと作成されたタグがプッシュされ、`.gem`ファイルが[rubygems.org](https://rubygems.org)にプッシュされます。
 
-## Contributing
+## コントリビューション
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/misogi. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/misogi/blob/main/CODE_OF_CONDUCT.md).
+バグレポートやプルリクエストは、GitHubの https://github.com/iyuuya/misogi で受け付けています。このプロジェクトは、安全で歓迎される協力の場であることを目指しており、コントリビューターは[行動規範](https://github.com/iyuuya/misogi/blob/main/CODE_OF_CONDUCT.md)を遵守することが期待されます。
 
-## License
+## ライセンス
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+このgemは[MITライセンス](https://opensource.org/licenses/MIT)の条件の下でオープンソースとして利用可能です。
 
-## Code of Conduct
+## 行動規範
 
-Everyone interacting in the Misogi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/misogi/blob/main/CODE_OF_CONDUCT.md).
+Misogiプロジェクトのコードベース、イシュートラッカー、チャットルーム、メーリングリストでやり取りするすべての人は、[行動規範](https://github.com/iyuuya/misogi/blob/main/CODE_OF_CONDUCT.md)に従うことが期待されます。
