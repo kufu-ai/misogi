@@ -232,7 +232,7 @@ validator = Misogi::Validator.new(rules: [rule])
 
 ## コントリビューション
 
-バグレポートやプルリクエストは、GitHubの https://github.com/iyuuya/misogi で受け付けています。このプロジェクトは、安全で歓迎される協力の場であることを目指しており、コントリビューターは[行動規範](https://github.com/iyuuya/misogi/blob/main/CODE_OF_CONDUCT.md)を遵守することが期待されます。
+バグレポートやプルリクエストは、GitHubの https://github.com/kufu-ai/misogi で受け付けています。このプロジェクトは、安全で歓迎される協力の場であることを目指しており、コントリビューターは[行動規範](https://github.com/kufu-ai/misogi/blob/main/CODE_OF_CONDUCT.md)を遵守することが期待されます。
 
 ## ライセンス
 
@@ -240,4 +240,4 @@ validator = Misogi::Validator.new(rules: [rule])
 
 ## 行動規範
 
-Misogiプロジェクトのコードベース、イシュートラッカー、チャットルーム、メーリングリストでやり取りするすべての人は、[行動規範](https://github.com/iyuuya/misogi/blob/main/CODE_OF_CONDUCT.md)に従うことが期待されます。
+Misogiプロジェクトのコードベース、イシュートラッカー、チャットルーム、メーリングリストでやり取りするすべての人は、[行動規範](https://github.com/kufu-ai/misogi/blob/main/CODE_OF_CONDUCT.md)に従うことが期待されます。

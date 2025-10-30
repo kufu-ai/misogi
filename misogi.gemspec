@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "ファイルの内容とパスの整合性をチェックするlintツール"
   spec.description = "ファイル内で定義されているクラスやモジュールの名前空間と、実際のファイルパスが一致しているかを検証するlintツールです。"
-  spec.homepage = "https://github.com/iyuuya/misogi"
+  spec.homepage = "https://github.com/kufu-ai/misogi"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
   spec.metadata["homepage_uri"] = spec.homepage
