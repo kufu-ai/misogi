@@ -15,6 +15,27 @@ Misogiは、ファイルの内容を解析して、そのファイル名やデ�
 
 標準的な Ruby gem の規約に従い、gem 管理には Bundler を使用しています。
 
+## CLIコマンド
+
+### 使い方
+
+```bash
+# ヘルプを表示
+./exe/misogi --help
+
+# デフォルト設定でチェック（lib, app, spec配下のファイル）
+./exe/misogi
+
+# 特定のファイルをチェック
+./exe/misogi lib/foo.rb
+
+# ルールを指定してチェック
+./exe/misogi --rules ruby_standard,rails,rspec
+
+# パターンを指定してチェック
+./exe/misogi --pattern "lib/**/*.rb"
+```
+
 ## 開発コマンド
 
 ### セットアップ
@@ -74,3 +95,97 @@ bundle exec rake release     # gitタグを作成してRubyGemsにプッシュ�
 ## バージョン管理
 
 リリース前に `lib/misogi/version.rb` でバージョンを更新してください。バージョンはセマンティックバージョニングに従います。
+
+## アーキテクチャ設計
+
+### 概要
+
+Misogiは、ファイルの内容を解析して、ファイル名やディレクトリ配置が適切かをチェックするlintツールです。様々なルールセット（Ruby一般、Rails、RSpecなど）に対応し、カスタムルールも定義できる拡張可能な設計を採用しています。
+
+### コアコンポーネント
+
+#### 1. Rule（ルール）
+- 基底クラス: `Misogi::Rule::Base`
+- 各ルールは`validate(file_path, parsed_content)`メソッドを実装
+- 検証結果を`Misogi::Violation`オブジェクトとして返す
+- ルールは独立して動作し、組み合わせ可能
+
+#### 2. Parser（パーサー）
+- ファイル内容を解析してクラス/モジュールの定義を抽出
+- `Misogi::Parser::Ruby`が基本的なRubyファイルの解析を担当
+- 解析結果は`Misogi::ParsedContent`オブジェクトとして返す
+- 名前空間のネストも正しく解析
+
+#### 3. Validator（バリデーター）
+- `Misogi::Validator`がルールの実行とViolationの収集を担当
+- 複数のルールを同時に適用可能
+- ファイルパスとパース結果を各ルールに渡して検証
+
+#### 4. Configuration（設定）
+- `.misogi.yml`でプロジェクト固有の設定を管理
+- 有効にするルールセットの指定
+- カスタムルールのパス指定
+- 除外パターンの指定
+
+#### 5. Built-in Rules（組み込みルール）
+- `Misogi::Rule::RubyStandard`: Ruby一般の規約（ファイル名とクラス名の対応）
+- `Misogi::Rule::Rails`: Railsの規約（app/models、app/controllersなど）
+- `Misogi::Rule::RSpec`: RSpecの規約（spec/ファイルパスとテスト対象の対応）
+
+#### 6. Custom Rules（カスタムルール）
+- `Misogi::Rule::Base`を継承してカスタムルールを作成
+- `.misogi.yml`で外部ルールファイルを指定
+- プロジェクト固有のディレクトリ構造ルールを定義可能
+
+### ディレクトリ構造
+
+```
+lib/
+├── misogi.rb                    # メインエントリーポイント
+├── misogi/
+│   ├── version.rb               # バージョン定数
+│   ├── violation.rb             # 違反情報を保持するクラス
+│   ├── parsed_content.rb        # パース結果を保持するクラス
+│   ├── configuration.rb         # 設定を管理するクラス
+│   ├── parser/
+│   │   ├── base.rb              # パーサーの基底クラス
+│   │   └── ruby.rb              # Rubyファイルのパーサー
+│   ├── rule/
+│   │   ├── base.rb              # ルールの基底クラス
+│   │   ├── ruby_standard.rb     # Ruby一般の規約ルール
+│   │   ├── rails.rb             # Railsの規約ルール
+│   │   └── rspec.rb             # RSpecの規約ルール
+│   ├── validator.rb             # バリデーション実行クラス
+│   └── cli.rb                   # コマンドラインインターフェース（将来実装）
+```
+
+### 設定ファイル例（.misogi.yml）
+
+```yaml
+# 有効にするルールセット
+rules:
+  - ruby_standard
+  - rails
+  - rspec
+
+# カスタムルールのパス
+custom_rules:
+  - lib/custom_rules/my_rule.rb
+
+# 除外パターン
+exclude:
+  - vendor/**/*
+  - tmp/**/*
+  - db/migrate/**/*
+```
+
+### 実装の優先順位
+
+1. `Misogi::Rule::Base` - ルールの基底クラス
+2. `Misogi::Parser::Ruby` - Rubyファイルのパーサー
+3. `Misogi::Validator` - バリデーター
+4. `Misogi::Rule::RubyStandard` - Ruby一般ルール
+5. `Misogi::Rule::Rails` - Railsルール
+6. `Misogi::Rule::RSpec` - RSpecルール
+7. `Misogi::Configuration` - 設定管理
+8. カスタムルールのロード機能

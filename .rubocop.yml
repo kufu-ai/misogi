@@ -1,8 +1,49 @@
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+# テストファイルでは長いブロック/メソッドを許容する
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+
+Metrics/ClassLength:
+  Exclude:
+    - "lib/misogi/cli.rb"
+    - "lib/misogi/rule/**/*"
+
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - "lib/misogi/parser/**/*"
+    - "lib/misogi/cli.rb"
+    - "lib/misogi/rule/**/*"
+
+# パーサーは複雑な処理を行うため、メトリクスを緩和
+Metrics/AbcSize:
+  Exclude:
+    - "lib/misogi/parser/**/*"
+    - "lib/misogi/cli.rb"
+    - "lib/misogi/rule/**/*"
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "lib/misogi/parser/**/*"
+    - "lib/misogi/rule/**/*"
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "lib/misogi/parser/**/*"
+    - "lib/misogi/rule/**/*"
+
+# パーサーでの重複ブランチは意図的なもの
+Lint/DuplicateBranch:
+  Exclude:
+    - "lib/misogi/parser/**/*"

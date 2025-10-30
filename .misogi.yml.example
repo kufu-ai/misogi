@@ -1,0 +1,39 @@
+# Misogi 設定ファイル
+# このファイルを .misogi.yml にコピーして使用してください
+
+# 使用するルールと適用パターン
+rules:
+  # Ruby一般ルール: lib配下のファイルに適用
+  ruby_standard:
+    patterns:
+      - "lib/**/*.rb"
+    base_path: "lib"
+
+  # Railsルール: app配下のファイルに適用
+  rails:
+    patterns:
+      - "app/**/*.rb"
+    # inflections.rbのパス（省略時は自動検出）
+    # inflections_path: "config/initializers/inflections.rb"
+
+  # RSpecルール: spec配下のファイルに適用
+  rspec:
+    patterns:
+      - "spec/**/*_spec.rb"
+
+# 検証から除外するファイルパターン
+exclude:
+  # 一時ファイル
+  - "tmp/**/*"
+
+  # ベンダーファイル
+  - "vendor/**/*"
+
+  # ビルド成果物
+  - "pkg/**/*"
+
+  # データベースファイル
+  - "db/schema.rb"
+
+  # 自動生成ファイル
+  - "**/generated/**/*"

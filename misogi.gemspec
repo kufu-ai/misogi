@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   # gemがリリースされる際に追加するファイルを指定します。
   # `git ls-files -z`はgitに追加されているファイルを読み込みます。
