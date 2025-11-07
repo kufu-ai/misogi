@@ -21,5 +21,16 @@ module Misogi
     def to_s
       "#{file_path}: [#{rule_name}] #{message}"
     end
+
+    # 違反情報をハッシュとして表現
+    # @return [Hash]
+    def to_h
+      {
+        file_path:,
+        message:,
+        rule_name:,
+        suggest_path:
+      }
+    end
   end
 end

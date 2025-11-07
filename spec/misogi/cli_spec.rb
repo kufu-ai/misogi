@@ -117,5 +117,62 @@ RSpec.describe Misogi::CLI do
         expect(cli.run).to eq(1)
       end
     end
+
+    context "出力フォーマットを指定した場合" do
+      it "--formatオプションでJSON形式を指定できる" do
+        allow(Dir).to receive(:glob).and_return([])
+
+        cli = described_class.new(["--format", "json"])
+        cli.run
+        expect(cli.options[:format]).to eq("json")
+      end
+
+      it "-fオプションでJSON形式を指定できる" do
+        allow(Dir).to receive(:glob).and_return([])
+
+        cli = described_class.new(["-f", "json"])
+        cli.run
+        expect(cli.options[:format]).to eq("json")
+      end
+
+      it "違反がない場合にJSON形式で空配列を出力する" do
+        file_path = "lib/foo.rb"
+        content = "class Foo; end"
+
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(".misogi.yml").and_return(false)
+        allow(File).to receive(:exist?).with(file_path).and_return(true)
+        allow(File).to receive(:read).with(file_path).and_return(content)
+
+        cli = described_class.new([file_path, "--format", "json"])
+        expect { cli.run }.to output("[]\n").to_stdout
+      end
+
+      it "違反がある場合にJSON形式で違反情報を出力する" do
+        file_path = "lib/foo.rb"
+        content = "class Bar; end"
+
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(".misogi.yml").and_return(false)
+        allow(File).to receive(:exist?).with(file_path).and_return(true)
+        allow(File).to receive(:read).with(file_path).and_return(content)
+
+        cli = described_class.new([file_path, "--format", "json"])
+        expect { cli.run }.to output(/\[\s*\{.*"file_path".*"message".*"rule_name".*"suggest_path".*\}\s*\]/m).to_stdout
+      end
+
+      it "text形式の場合は通常の出力を行う" do
+        file_path = "lib/foo.rb"
+        content = "class Foo; end"
+
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(".misogi.yml").and_return(false)
+        allow(File).to receive(:exist?).with(file_path).and_return(true)
+        allow(File).to receive(:read).with(file_path).and_return(content)
+
+        cli = described_class.new([file_path, "--format", "text"])
+        expect { cli.run }.to output(/違反は見つかりませんでした/).to_stdout
+      end
+    end
   end
 end

@@ -47,6 +47,9 @@ misogi --base-path src
 # ヘルプを表示
 misogi --help
 
+# 出力フォーマット指定
+misogi --format json
+
 # バージョンを表示
 misogi --version
 ```

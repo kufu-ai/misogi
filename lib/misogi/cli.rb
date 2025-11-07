@@ -13,7 +13,8 @@ module Misogi
         rules: nil, # nilの場合は設定ファイルを使用
         base_path: nil,
         pattern: nil,
-        config_path: ".misogi.yml"
+        config_path: ".misogi.yml",
+        format: "text"
       }
     end
 
@@ -105,6 +106,10 @@ module Misogi
 
         opts.on("-c", "--config PATH", "設定ファイルのパス (デフォルト: .misogi.yml)") do |path|
           @options[:config_path] = path
+        end
+
+        opts.on("-f", "--format FORMAT", "出力フォーマット(text|json)") do |format|
+          @options[:format] = format
         end
 
         opts.on("-h", "--help", "ヘルプを表示") do
@@ -235,12 +240,18 @@ module Misogi
     # 違反を表示
     # @param violations [Array<Violation>] 違反のリスト
     def display_violations(violations)
-      if violations.empty?
-        puts "✓ 違反は見つかりませんでした"
-      else
-        puts "✗ #{violations.size}件の違反が見つかりました:\n\n"
-        violations.each do |violation|
-          puts violation
+      case @options[:format]
+      when "json"
+        require "json"
+        puts JSON.pretty_generate(violations.map(&:to_h))
+      when "text"
+        if violations.empty?
+          puts "✓ 違反は見つかりませんでした"
+        else
+          puts "✗ #{violations.size}件の違反が見つかりました:\n\n"
+          violations.each do |violation|
+            puts violation
+          end
         end
       end
     end
