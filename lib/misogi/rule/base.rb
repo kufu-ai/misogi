@@ -24,9 +24,10 @@ module Misogi
       # 違反を作成するヘルパーメソッド
       # @param file_path [String] ファイルパス
       # @param message [String] 違反メッセージ
+      # @param suggest_path [String|nil] 修正案のパス
       # @return [Violation]
-      def violation(file_path:, message:)
-        Violation.new(file_path: file_path, message: message, rule_name: name)
+      def violation(file_path:, message:, suggest_path: nil)
+        Violation.new(file_path: file_path, message: message, rule_name: name, suggest_path:)
       end
     end
   end

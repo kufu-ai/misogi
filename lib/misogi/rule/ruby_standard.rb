@@ -40,7 +40,8 @@ module Misogi
           defined_namespaces = parsed_content.namespaces.join(", ")
           violations << violation(
             file_path: file_path,
-            message: "名前空間 '#{defined_namespaces}' は #{expected_paths_str} に配置すべきです"
+            message: "名前空間 '#{defined_namespaces}' は #{expected_paths_str} に配置すべきです",
+            suggest_path: expected_paths_str
           )
         end
 

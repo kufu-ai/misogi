@@ -64,7 +64,8 @@ module Misogi
           described_str = described_namespaces.join(", ")
           violations << violation(
             file_path: file_path,
-            message: "テスト対象 '#{described_str}' のspecファイルは #{expected_paths_str} に配置すべきです"
+            message: "テスト対象 '#{described_str}' のspecファイルは #{expected_paths_str} に配置すべきです",
+            suggest_path: expected_paths_str
           )
         end
 

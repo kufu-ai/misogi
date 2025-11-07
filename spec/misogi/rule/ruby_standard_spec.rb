@@ -70,6 +70,7 @@ RSpec.describe Misogi::Rule::RubyStandard do
         expect(violations.size).to eq(1)
         expect(violations.first.message).to include("名前空間 'Bar' は")
         expect(violations.first.message).to include("`lib/bar.rb` に配置すべきです")
+        expect(violations.first.suggest_path).to eq("`lib/bar.rb`")
       end
 
       it "ネストが間違っている場合も違反を検出する" do
@@ -84,6 +85,7 @@ RSpec.describe Misogi::Rule::RubyStandard do
         expect(violations.size).to eq(1)
         expect(violations.first.message).to include("名前空間 'Bar' は")
         expect(violations.first.message).to include("`lib/bar.rb` に配置すべきです")
+        expect(violations.first.suggest_path).to eq("`lib/bar.rb`")
       end
     end
 
