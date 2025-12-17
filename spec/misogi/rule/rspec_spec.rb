@@ -57,7 +57,7 @@ RSpec.describe Misogi::Rule::RSpec do
         expect(violations.size).to eq(1)
         expect(violations.first.message).to include("テスト対象 'Person' のspecファイルは")
         expect(violations.first.message).to include("`spec/models/person_spec.rb` に配置すべきです")
-        expect(violations.first.suggest_path).to eq("`spec/models/person_spec.rb`")
+        expect(violations.first.suggest_path).to eq("spec/models/person_spec.rb")
       end
     end
 

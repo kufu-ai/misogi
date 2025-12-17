@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "optparse"
+require "fileutils"
 
 module Misogi
   # コマンドラインインターフェース
@@ -14,7 +15,8 @@ module Misogi
         base_path: nil,
         pattern: nil,
         config_path: ".misogi.yml",
-        format: "text"
+        format: "text",
+        fix: false
       }
     end
 
@@ -39,9 +41,74 @@ module Misogi
                      validate_with_config(files)
                    end
 
-      display_violations(violations)
+      if @options[:fix]
+        fix_violations(violations)
+      else
+        display_violations(violations)
+      end
 
       violations.empty? ? 0 : 1
+    end
+
+    # 違反を修正する
+    # @param violations [Array<Violation>] 違反のリスト
+    def fix_violations(violations)
+      fixable_violations = violations.select(&:suggest_path)
+      unfixable_violations = violations.reject(&:suggest_path)
+
+      if unfixable_violations.any?
+        puts "⚠️  #{unfixable_violations.size}件の違反は自動修正できません:"
+        unfixable_violations.each { |v| puts "  #{v}" }
+        puts if fixable_violations.any?
+      end
+
+      if fixable_violations.empty?
+        puts "✅ 修正可能な違反はありませんでした"
+        return
+      end
+
+      puts "🔧 以下の #{fixable_violations.size}件の違反を修正します:"
+      fixable_violations.each { |v| puts "  #{v.file_path} -> #{v.suggest_path}" }
+
+      print "\n実行しますか? [y/N] "
+      response = gets.chomp.downcase
+
+      return unless %w[y yes].include?(response)
+
+      fixed_count = 0
+      fixable_violations.each do |violation|
+        if move_file(violation.file_path, violation.suggest_path)
+          fixed_count += 1
+          puts "✓ #{violation.file_path} -> #{violation.suggest_path}"
+        else
+          puts "✗ #{violation.file_path} の移動に失敗しました"
+        end
+      end
+
+      puts "\n✅ #{fixed_count}件のファイルを移動しました"
+    end
+
+    # ファイルを移動する
+    # @param source_path [String] 移動元のパス
+    # @param target_path [String] 移動先のパス
+    # @return [Boolean] 成功した場合true
+    def move_file(source_path, target_path)
+      # ターゲットディレクトリが存在しない場合は作成
+      target_dir = File.dirname(target_path)
+      FileUtils.mkdir_p(target_dir) unless Dir.exist?(target_dir)
+
+      # ターゲットファイルが既に存在する場合は上書きしない
+      if File.exist?(target_path)
+        warn "警告: #{target_path} は既に存在するため移動をスキップしました"
+        return false
+      end
+
+      # ファイルを移動
+      FileUtils.mv(source_path, target_path)
+      true
+    rescue StandardError => e
+      warn "エラー: #{source_path} の移動に失敗しました: #{e.message}"
+      false
     end
 
     private
@@ -110,6 +177,10 @@ module Misogi
 
         opts.on("-f", "--format FORMAT", "出力フォーマット(text|json)") do |format|
           @options[:format] = format
+        end
+
+        opts.on("--fix", "違反を自動修正する") do
+          @options[:fix] = true
         end
 
         opts.on("-h", "--help", "ヘルプを表示") do

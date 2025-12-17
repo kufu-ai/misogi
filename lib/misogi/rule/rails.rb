@@ -64,10 +64,14 @@ module Misogi
         unless expected_paths.include?(file_path)
           expected_paths_str = expected_paths.map { |p| "`#{p}`" }.join(" または ")
           defined_namespaces = parsed_content.namespaces.join(", ")
+
+          # 候補が1つの場合のみ修正案を提示
+          suggest_path = expected_paths.size == 1 ? expected_paths.first : nil
+
           violations << violation(
             file_path: file_path,
             message: "名前空間 '#{defined_namespaces}' は #{expected_paths_str} に配置すべきです",
-            suggest_path: expected_paths_str
+            suggest_path: suggest_path
           )
         end
 

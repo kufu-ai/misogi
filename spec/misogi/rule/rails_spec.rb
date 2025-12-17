@@ -44,7 +44,7 @@ RSpec.describe Misogi::Rule::Rails do
         expect(violations.size).to eq(1)
         expect(violations.first.message).to include("名前空間 'Person' は")
         expect(violations.first.message).to include("`app/models/person.rb` に配置すべきです")
-        expect(violations.first.suggest_path).to eq("`app/models/person.rb`")
+        expect(violations.first.suggest_path).to eq("app/models/person.rb")
       end
     end
 
