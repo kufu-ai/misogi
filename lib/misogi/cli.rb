@@ -56,25 +56,52 @@ module Misogi
       fixable_violations = violations.select(&:suggest_path)
       unfixable_violations = violations.reject(&:suggest_path)
 
-      if unfixable_violations.any?
-        puts "⚠️  #{unfixable_violations.size}件の違反は自動修正できません:"
-        unfixable_violations.each { |v| puts "  #{v}" }
-        puts if fixable_violations.any?
-      end
+      display_unfixable_violations(unfixable_violations, fixable_violations)
 
       if fixable_violations.empty?
         puts "✅ 修正可能な違反はありませんでした"
         return
       end
 
+      display_fixable_violations(fixable_violations)
+
+      return unless confirmed?
+
+      fixed_count = apply_fixes(fixable_violations)
+      puts "\n✅ #{fixed_count}件のファイルを移動しました"
+    end
+
+    # 修正不可能な違反を表示する
+    # @param unfixable_violations [Array<Violation>] 修正不可能な違反のリスト
+    # @param fixable_violations [Array<Violation>] 修正可能な違反のリスト
+    def display_unfixable_violations(unfixable_violations, fixable_violations)
+      return unless unfixable_violations.any?
+
+      puts "⚠️  #{unfixable_violations.size}件の違反は自動修正できません:"
+      unfixable_violations.each { |v| puts "  #{v}" }
+      puts if fixable_violations.any?
+    end
+
+    # 修正可能な違反を表示する
+    # @param fixable_violations [Array<Violation>] 修正可能な違反のリスト
+    def display_fixable_violations(fixable_violations)
       puts "🔧 以下の #{fixable_violations.size}件の違反を修正します:"
       fixable_violations.each { |v| puts "  #{v.file_path} -> #{v.suggest_path}" }
 
       print "\n実行しますか? [y/N] "
+    end
+
+    # 実行確認を取得する
+    # @return [Boolean] ユーザーが実行を承認した場合true
+    def confirmed?
       response = gets.chomp.downcase
+      %w[y yes].include?(response)
+    end
 
-      return unless %w[y yes].include?(response)
-
+    # 修正を適用する
+    # @param fixable_violations [Array<Violation>] 修正可能な違反のリスト
+    # @return [Integer] 修正されたファイルの数
+    def apply_fixes(fixable_violations)
       fixed_count = 0
       fixable_violations.each do |violation|
         if move_file(violation.file_path, violation.suggest_path)
@@ -84,8 +111,7 @@ module Misogi
           puts "✗ #{violation.file_path} の移動に失敗しました"
         end
       end
-
-      puts "\n✅ #{fixed_count}件のファイルを移動しました"
+      fixed_count
     end
 
     # ファイルを移動する
@@ -95,7 +121,7 @@ module Misogi
     def move_file(source_path, target_path)
       # ターゲットディレクトリが存在しない場合は作成
       target_dir = File.dirname(target_path)
-      FileUtils.mkdir_p(target_dir) unless Dir.exist?(target_dir)
+      FileUtils.mkdir_p(target_dir)
 
       # ターゲットファイルが既に存在する場合は上書きしない
       if File.exist?(target_path)
@@ -157,41 +183,7 @@ module Misogi
     # オプションをパース
     def parse_options
       parser = OptionParser.new do |opts|
-        opts.banner = "使い方: misogi [オプション] [ファイル...]"
-
-        opts.on("-r", "--rules RULES", Array, "使用するルール (ruby_standard,rails,rspec)") do |rules|
-          @options[:rules] = rules.map(&:to_sym)
-        end
-
-        opts.on("-b", "--base-path PATH", "ベースパス (デフォルト: lib)") do |path|
-          @options[:base_path] = path
-        end
-
-        opts.on("-p", "--pattern PATTERN", "検証するファイルパターン") do |pattern|
-          @options[:pattern] = pattern
-        end
-
-        opts.on("-c", "--config PATH", "設定ファイルのパス (デフォルト: .misogi.yml)") do |path|
-          @options[:config_path] = path
-        end
-
-        opts.on("-f", "--format FORMAT", "出力フォーマット(text|json)") do |format|
-          @options[:format] = format
-        end
-
-        opts.on("--fix", "違反を自動修正する") do
-          @options[:fix] = true
-        end
-
-        opts.on("-h", "--help", "ヘルプを表示") do
-          puts opts
-          exit 0
-        end
-
-        opts.on("-v", "--version", "バージョンを表示") do
-          puts "Misogi #{Misogi::VERSION}"
-          exit 0
-        end
+        setup_option_parser(opts)
       end
 
       parser.parse!(@argv)
@@ -199,6 +191,46 @@ module Misogi
       warn "エラー: #{e.message}"
       warn parser.help
       exit 1
+    end
+
+    # OptionParserのオプションを設定する
+    # @param parser [OptionParser] OptionParserインスタンス
+    def setup_option_parser(parser)
+      parser.banner = "使い方: misogi [オプション] [ファイル...]"
+
+      parser.on("-r", "--rules RULES", Array, "使用するルール (ruby_standard,rails,rspec)") do |rules|
+        @options[:rules] = rules.map(&:to_sym)
+      end
+
+      parser.on("-b", "--base-path PATH", "ベースパス (デフォルト: lib)") do |path|
+        @options[:base_path] = path
+      end
+
+      parser.on("-p", "--pattern PATTERN", "検証するファイルパターン") do |pattern|
+        @options[:pattern] = pattern
+      end
+
+      parser.on("-c", "--config PATH", "設定ファイルのパス (デフォルト: .misogi.yml)") do |path|
+        @options[:config_path] = path
+      end
+
+      parser.on("-f", "--format FORMAT", "出力フォーマット(text|json)") do |format|
+        @options[:format] = format
+      end
+
+      parser.on("--fix", "違反を自動修正する") do
+        @options[:fix] = true
+      end
+
+      parser.on("-h", "--help", "ヘルプを表示") do
+        puts parser
+        exit 0
+      end
+
+      parser.on("-v", "--version", "バージョンを表示") do
+        puts "Misogi #{Misogi::VERSION}"
+        exit 0
+      end
     end
 
     # 検証対象のファイルを収集
